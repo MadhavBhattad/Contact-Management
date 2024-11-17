@@ -49,3 +49,34 @@ Update the MongoDB connection string in server/index.js if needed.
 #### 3. If ports conflict, adjust the ports in the codebase or your local machine:
         Backend: server/index.js
         Frontend: client/package.json ("start" script with PORT environment variable).
+
+### Database Schema Script
+To set up the database collection in MongoDB, use the following schema:
+```bash
+const mongoose = require('mongoose');
+
+const contactSchema = new mongoose.Schema({
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  email: { 
+    type: String, 
+    required: true, 
+    validate: {
+      validator: (v) => /@gmail\.com$/.test(v),
+      message: (props) => `${props.value} is not a valid Gmail address!`,
+    },
+  },
+  phone: { 
+    type: String, 
+    required: true, 
+    validate: {
+      validator: (v) => /^\d{10}$/.test(v),
+      message: (props) => `${props.value} is not a valid 10-digit phone number!`,
+    },
+  },
+  company: { type: String, required: true },
+  jobTitle: { type: String, required: true },
+});
+
+module.exports = mongoose.model('Contact', contactSchema);
+```
